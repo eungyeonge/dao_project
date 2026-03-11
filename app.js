@@ -1,12 +1,8 @@
-/**
- * DAO (Digital Art Odyssey) - Core Logic
- */
-
-// 1. 박물관 및 작품 데이터
+// 박물관 및 작품 데이터
 const MUSEUM_DATA = {
     louvre: { label: "루브르 박물관", map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.8740960862534!2d2.335455315663671!3d48.86061107928737!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e671d877937b0f%3A0xb9757ad1a440683e!2z66Oo666W0IOuwleyrrOq0gA!5e0!3m2!1sko!2skr!4v1682145678901!5m2!1sko!2skr" },
     national: { label: "내셔널 갤러리", map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.246830172605!2d-0.13109122338162232!3d51.50853301010339!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604ce17604393%3A0x3f54508933b9d0!2z64K07I6U64SQIOqwnOufvOumrA!5e0!3m2!1sko!2skr!4v1682145800000!5m2!1sko!2skr" },
-    vatican: { label: "바티칸 박물관", map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2994.507833147987!2d12.453079315419077!3d41.90648797921947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132f6063837c8b8f%3A0xa9ed6d0a07b3a26f!2z67CU7Yuw7Lm0IOuwleyrrOq0gA!5e0!3m2!1sko!2skr!4v1682146050000!5m2!1sko!2skr" },
+    vatican: { label: "바티칸 박물관", map: "https://www.google.com/maps/embed?pb!1m18!1m12!1m3!1d2994.507833147987!2d12.453079315419077!3d41.90648797921947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x132f6063837c8b8f%3A0xa9ed6d0a07b3a26f!2z67CU7Yuw7Lm0IOuwleyrrOq0gA!5e0!3m2!1sko!2skr!4v1682146050000!5m2!1sko!2skr" },
     orangerie: { label: "오랑주리", map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.7702220455855!2d2.320490076710433!3d48.86384770041232!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66f3513b63297%3A0xd6e5f84d668c2937!2z7Jik656R7KO866asIOuvuOyInOq0gA!5e0!3m2!1sko!2skr!4v1682145900000!5m2!1sko!2skr" }
 };
 
@@ -31,8 +27,7 @@ const ARTWORKS = {
     ]
 };
 
-// 2. 앱 상태 관리
-// 핵심 수정: currentUser를 localStorage에서 불러옵니다.
+// 앱 상태 관리
 const state = {
     users: JSON.parse(localStorage.getItem('dao_users') || '[]'),
     currentUser: JSON.parse(localStorage.getItem('dao_currentUser') || 'null'),
@@ -41,7 +36,7 @@ const state = {
     currentArtId: null
 };
 
-// 3. UI 렌더링 함수
+// UI 렌더링 함수
 function renderAuthUI() {
     const authBtns = document.getElementById('authBtns');
     const userBadge = document.getElementById('userBadge');
@@ -98,7 +93,7 @@ function selectArt(museumId, artId) {
     document.getElementById('like-btn').classList.remove('active');
 }
 
-// 4. 초기화 및 이벤트 핸들링
+// 초기화 및 이벤트 핸들링
 function initialize() {
     // 미술관 탭 이벤트
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -200,11 +195,14 @@ function initialize() {
             const user = state.users.find(u => u.email === email && u.pw === pw);
             if (user) {
                 state.currentUser = user;
-                // 핵심 수정: 로그인 정보를 localStorage에 저장합니다.
                 localStorage.setItem('dao_currentUser', JSON.stringify(user));
+                
+                // 로그인 UI를 반영하고 모달 닫음
                 renderAuthUI();
                 modal.classList.remove('open');
                 alert(user.nick + "님 로그인 되셨습니다.");
+                
+                location.href = 'index.html';
             } else {
                 authNotice.innerText = "계정 정보가 올바르지 않습니다.";
                 authNotice.style.display = 'block';
@@ -215,9 +213,10 @@ function initialize() {
 
     document.getElementById('logoutBtn').onclick = () => {
         state.currentUser = null;
-        // 핵심 수정: 로그아웃 시 정보를 localStorage에서 제거합니다.
         localStorage.removeItem('dao_currentUser');
-        renderAuthUI();
+        
+        alert("로그아웃 되었습니다.");
+        location.href = 'index.html';
     };
 
     // 초기 실행
