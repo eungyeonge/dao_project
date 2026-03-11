@@ -32,9 +32,10 @@ const ARTWORKS = {
 };
 
 // 2. 앱 상태 관리
+// 핵심 수정: currentUser를 localStorage에서 불러옵니다.
 const state = {
     users: JSON.parse(localStorage.getItem('dao_users') || '[]'),
-    currentUser: null,
+    currentUser: JSON.parse(localStorage.getItem('dao_currentUser') || 'null'),
     likes: JSON.parse(localStorage.getItem('dao_likes') || '{}'),
     currentMuseum: 'louvre',
     currentArtId: null
@@ -48,19 +49,16 @@ function renderAuthUI() {
     const likeHint = document.getElementById('like-hint');
 
     if (state.currentUser) {
-        // 로그인 성공 시: 닉네임 표시 (문자열 닉네임만 사용, 숫자/빈값이면 이메일 ID 사용)
         authBtns.hidden = true;
         userBadge.hidden = false;
+        
         const nick = state.currentUser.nick;
         const isValidNick = typeof nick === 'string' && nick.trim().length > 0 && !/^\d+$/.test(nick.trim());
         const displayName = isValidNick ? nick.trim() : (state.currentUser.email ? state.currentUser.email.split('@')[0] : "사용자");
         
-        // 텍스트 뒤에 '님' 추가
         userNameEl.innerText = displayName + "님"; 
-        
         if (likeHint) likeHint.innerText = "보관함에 저장되었습니다.";
     } else {
-        // 로그아웃 상태
         authBtns.hidden = false;
         userBadge.hidden = true;
         if (likeHint) likeHint.innerText = "로그인하면 보관함에 저장됩니다.";
@@ -113,7 +111,7 @@ function initialize() {
         };
     });
 
-    // 돋보기 효과 (마우스 이동 시 중심점 변경)
+    // 돋보기 효과
     const frame = document.getElementById('zoom-container');
     const img = document.getElementById('main-img');
     if (frame && img) {
@@ -140,18 +138,15 @@ function initialize() {
     // 좋아요 버튼
     document.getElementById('like-btn').onclick = () => {
         if (!state.currentArtId) return;
-
         if (!state.currentUser) {
             alert('로그인 후 좋아요를 누를 수 있습니다.');
             return;
         }
-
         const id = state.currentArtId;
         const current = state.likes[id] || 0;
         const next = current + 1;
         state.likes[id] = next;
         localStorage.setItem('dao_likes', JSON.stringify(state.likes));
-
         document.getElementById('like-count').innerText = next.toLocaleString();
         document.getElementById('like-btn').classList.add('active');
     };
@@ -165,13 +160,10 @@ function initialize() {
         const isReg = mode === 'register';
         document.getElementById('authTitle').innerText = isReg ? "회원가입" : "로그인";
         document.getElementById('submitAuthBtn').innerText = isReg ? "가입하기" : "로그인";
-        
         const nameField = document.getElementById('nameField');
         if (nameField) nameField.hidden = !isReg;
-
         document.querySelector('[data-auth-mode="login"]').classList.toggle('active', !isReg);
         document.querySelector('[data-auth-mode="register"]').classList.toggle('active', isReg);
-        
         authForm.dataset.mode = mode;
         authNotice.style.display = 'none';
         authForm.reset();
@@ -192,10 +184,8 @@ function initialize() {
         const pw = document.getElementById('passwordInput').value;
 
         if (mode === 'register') {
-            // 회원가입 시 닉네임 우선순위: 입력값 > 이메일 ID
             const inputNick = document.getElementById('displayNameInput').value.trim();
             const nick = inputNick || email.split('@')[0];
-
             if (state.users.find(u => u.email === email)) {
                 authNotice.innerText = "이미 존재하는 이메일입니다.";
                 authNotice.style.display = 'block';
@@ -204,14 +194,14 @@ function initialize() {
             }
             state.users.push({ email, pw, nick });
             localStorage.setItem('dao_users', JSON.stringify(state.users));
-            
             alert(`가입 완료! 닉네임: ${nick}\n로그인 해주세요.`);
             setAuthMode('login');
         } else {
-            // 로그인 처리
             const user = state.users.find(u => u.email === email && u.pw === pw);
             if (user) {
                 state.currentUser = user;
+                // 핵심 수정: 로그인 정보를 localStorage에 저장합니다.
+                localStorage.setItem('dao_currentUser', JSON.stringify(user));
                 renderAuthUI();
                 modal.classList.remove('open');
                 alert(user.nick + "님 로그인 되셨습니다.");
@@ -225,6 +215,8 @@ function initialize() {
 
     document.getElementById('logoutBtn').onclick = () => {
         state.currentUser = null;
+        // 핵심 수정: 로그아웃 시 정보를 localStorage에서 제거합니다.
+        localStorage.removeItem('dao_currentUser');
         renderAuthUI();
     };
 
