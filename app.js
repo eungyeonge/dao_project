@@ -20,7 +20,7 @@ const ARTWORKS = {
         { id: "n2", title: "The Virgin of the Rocks", artist: "Leonardo da Vinci", desc: "다빈치의 성모자. 암석과 동굴 속에서 성모 마리아와 세례 요한, 아기 예수가 교감하는 신비로운 구도를 스푸마토로 완성했습니다. 런던 내셔널 갤러리 소장본입니다.", img: "img/img2.jpg", year: "1491~1508년경", tip: "암석과 인물의 명암, 스푸마토의 부드러운 경계를 보세요." }
     ],
     vatican: [
-        { id: "v1", title: "The School of Athens", artist: "Raphael", desc: "르네상스 지성의 전당. 라파엘로가 담아낸 고대 철학자들의 조화와 원근법의 미학입니다.", img: "img/img3.jpg", year: "1509~1511년", tip: "원근법의 소실점과 중앙의 플라톤·아리스토텔레스를 찾아보세요." },
+        { id: "v1", title: "The School of Athens", artist: "Raphael", desc: "르네상스 지성의 전당. 라파엘로가 담아낸 고대 철학자들의 조화와 원근법의 미학입니다.", img: "img/img3.jpg", year: "1509~1511년", tip: "원근법의 소실점과 중앙의 플라톤·아리스토텔레스를 찾아보세요.", source: "https://m.museivaticani.va/en/collezioni/musei/stanze-di-raffaello/scuola-di-atene.html" },
         { id: "v2", title: "The Last Supper", artist: "Leonardo da Vinci", desc: "다빈치의 걸작. 예수와 열두 제자가 마지막 만찬을 나누는 장면을 원근법과 제스처로 드라마틱하게 담았습니다. 배신과 구원의 순간이 한 화폭에 압축되어 있습니다.", img: "img/img4.jpg", year: "1495~1498년", tip: "제자들의 손짓과 표정, 배경 창문의 원근을 감상해 보세요." }
     ],
     orangerie: [
@@ -54,7 +54,10 @@ function renderAuthUI() {
         const nick = state.currentUser.nick;
         const isValidNick = typeof nick === 'string' && nick.trim().length > 0 && !/^\d+$/.test(nick.trim());
         const displayName = isValidNick ? nick.trim() : (state.currentUser.email ? state.currentUser.email.split('@')[0] : "사용자");
-        userNameEl.innerText = displayName; 
+        
+        // 텍스트 뒤에 '님' 추가
+        userNameEl.innerText = displayName + "님"; 
+        
         if (likeHint) likeHint.innerText = "보관함에 저장되었습니다.";
     } else {
         // 로그아웃 상태
@@ -211,6 +214,7 @@ function initialize() {
                 state.currentUser = user;
                 renderAuthUI();
                 modal.classList.remove('open');
+                alert(user.nick + "님 로그인 되셨습니다.");
             } else {
                 authNotice.innerText = "계정 정보가 올바르지 않습니다.";
                 authNotice.style.display = 'block';
