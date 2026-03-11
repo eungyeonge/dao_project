@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DAO | 세계 4대 미술관 디지털 투어</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- 상단 바 (항상 화이트 배경) -->
+    <div class="controls">
+      <a href="index.html" class="logo" aria-label="DAO 홈">
+        <img src="img/logo.png" alt="DAO" />
+      </a>
+      <button class="pill" id="dark-mode-btn" type="button">
+        <i class="fa-solid fa-moon"></i> 조명 끄기
+      </button>
+
+      <div id="authBtns">
+        <button class="pill secondary" id="openLoginBtn" type="button">
+          <i class="fa-solid fa-right-to-bracket"></i> 로그인
+        </button>
+        <button class="pill" id="openRegisterBtn" type="button">
+          <i class="fa-solid fa-user-plus"></i> 회원가입
+        </button>
+      </div>
+
+      <div id="userBadge" class="user-badge" hidden>
+        <span><i class="fa-solid fa-user"></i> <b id="userName"></b></span>
+        <button class="pill secondary" id="logoutBtn" type="button">로그아웃</button>
+      </div>
+    </div>
+
+    <header>
+      <h1>DAO</h1>
+      <p>전 세계의 마스터피스를 만나는 디지털 갤러리 투어</p>
+    </header>
+
+    <nav class="museum-tabs" aria-label="미술관 탭">
+      <button class="tab-btn active" type="button" data-museum="louvre">루브르</button>
+      <button class="tab-btn" type="button" data-museum="national">내셔널 갤러리</button>
+      <button class="tab-btn" type="button" data-museum="vatican">바티칸</button>
+      <button class="tab-btn" type="button" data-museum="orangerie">오랑주리</button>
+    </nav>
+
+    <main class="gallery-main">
+      <section>
+        <div class="art-frame" id="zoom-container">
+          <img id="main-img" alt="대표작" />
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </section>
+
+      <section class="info-box">
+        <h2 id="art-title"></h2>
+        <h3 id="art-author"></h3>
+        
+        <div class="meta-row">
+          <span class="tag" id="museum-label"></span>
+          <span class="tag"><a id="source-link" href="#" target="_blank">출처</a></span>
+        </div>
+
+        <p id="art-desc"></p>
+
+        <dl class="art-meta">
+          <dt>연도</dt>
+          <dd id="art-year">—</dd>
+          <dt>감상 포인트</dt>
+          <dd id="art-tip">—</dd>
+        </dl>
+
+        <div class="interaction">
+          <button class="like-btn" id="like-btn" type="button">
+            <i class="fa-solid fa-heart"></i> 좋아요 <span id="like-count">0</span>
+          </button>
+          <span class="tiny" id="like-hint"></span>
+        </div>
+      </section>
+    </main>
+
+    <!-- FAQ 섹션 (아코디언) -->
+    <section id="faq" class="faq-section">
+      <h2>자주 하는 질문 (FAQ)</h2>
+      <ul class="accordion">
+        <li>
+          <input type="radio" name="accordion" id="faq-1" checked>
+          <label for="faq-1">디지털 도슨트 투어는 어떻게 이용하나요?</label>
+          <div class="faq-content">
+            <p>각 작품 하단의 정보를 읽거나, 향후 업데이트될 오디오 가이드 기능을 통해 전문적인 해설을 즐기실 수 있습니다.</p>
+          </div>
+        </li>
+        <li>
+          <input type="radio" name="accordion" id="faq-2">
+          <label for="faq-2">이미지 출처는 어디인가요?</label>
+          <div class="faq-content">
+            <p>각 미술관의 공식 아카이브 및 위키백과를 통해 검증된 공개 라이선스 이미지를 사용하고 있습니다.</p>
+          </div>
+        </li>
+        <li>
+          <input type="radio" name="accordion" id="faq-3">
+          <label for="faq-3">로그인하면 어떤 혜택이 있나요?</label>
+          <div class="faq-content">
+            <p>작품에 누른 '좋아요'가 계정에 저장되어, 나만의 가상 보관함을 관리할 수 있습니다.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="map-section">
+      <h2><i class="fa-solid fa-location-dot"></i> 미술관 위치 </h2>
+      <div class="map-container">
+        <iframe id="google-map" title="미술관 지도"></iframe>
+      </div>
+    </section>
+
+    <footer>&copy; 2026 Art Voyage Digital Gallery. All rights reserved.</footer>
+
+    <!-- Auth 모달 -->
+    <div class="modal-backdrop" id="authModal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <div>
+            <h5 id="authTitle">로그인</h5>
+            <div class="auth-subtitle" id="authDesc">로그인하면 좋아요가 계정에 저장됩니다.</div>
+          </div>
+          <button class="close-modal-btn" id="closeAuthModal" type="button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-tabs">
+          <button class="active" type="button" data-auth-mode="login">로그인</button>
+          <button type="button" data-auth-mode="register">회원가입</button>
+        </div>
+
+        <div class="notice" id="authNotice">이미 존재하는 이메일입니다.</div>
+
+        <form id="authForm">
+          <div class="modal-body">
+            <div class="row">
+              <label for="emailInput">이메일</label>
+              <input id="emailInput" type="email" placeholder="aaa@naver.com" required />
+            </div>
+            <div class="row">
+              <label for="passwordInput">비밀번호 (6글자 이상)</label>
+              <input id="passwordInput" type="password" placeholder="••••••" required />
+            </div>
+            <div class="row" id="nameField" hidden>
+              <label for="displayNameInput">닉네임</label>
+              <input id="displayNameInput" type="text" placeholder="2글자 이상 입력" />
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="pill" id="submitAuthBtn" type="submit">로그인</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="app.js" defer></script>
+  </body>
+</html>
